@@ -1,30 +1,32 @@
 import {
   Button,
-  Card,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
   Input,
   Textarea,
   Typography,
 } from '@material-tailwind/react';
 import { useState } from 'react';
 
-const AddJob = () => {
+const UpdateJob = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleCreate = (e) => {
-    e.preventDefault();
-    console.log(title, description);
+  const handleUpdate = () => {
+    onClose();
   };
-
   return (
-    <Card color="transparent" shadow={false}>
-      <Typography variant="h4" color="blue-gray">
-        Add a Job
-      </Typography>
-      <form
-        className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
-        onSubmit={handleCreate}
-      >
+    <Dialog
+      open
+      animate={{
+        mount: { scale: 1, y: 0 },
+        unmount: { scale: 0.9, y: -100 },
+      }}
+    >
+      <DialogHeader>Update Job</DialogHeader>
+      <DialogBody>
         <div className="mb-1 flex flex-col gap-6">
           <Typography variant="h6" color="blue-gray" className="-mb-3">
             Job Title
@@ -54,13 +56,21 @@ const AddJob = () => {
             }}
           />
         </div>
-
-        <Button className="mt-6" fullWidth type="submit">
-          Create
+      </DialogBody>
+      <DialogFooter>
+        <Button variant="text" color="red" onClick={onClose} className="mr-1">
+          <span>Cancel</span>
         </Button>
-      </form>
-    </Card>
+        <Button
+          variant="gradient"
+          color="green"
+          onClick={(e) => handleUpdate(e)}
+        >
+          <span>Done</span>
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 };
 
-export default AddJob;
+export default UpdateJob;
