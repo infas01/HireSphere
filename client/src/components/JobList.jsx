@@ -14,16 +14,20 @@ import {
   Tooltip,
   Input,
 } from '@material-tailwind/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import UpdateJob from './UpdateJob';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeJobFromList, setSelectedJob } from '../slices/jobsSlice';
+import {
+  getJobs,
+  removeJobFromList,
+  setSelectedJob,
+} from '../slices/jobsSlice';
 
 const TABLE_HEAD = ['#', 'Job Title', 'Company', 'Description', 'Actions'];
 
 const JobList = () => {
   const [open, setOpen] = useState(false);
-  const { jobsList } = useSelector((state) => state.jobs);
+  const { jobsList, error } = useSelector((state) => state.jobs);
   const dispatch = useDispatch();
   const closeUpdate = () => {
     setOpen(false);
@@ -37,8 +41,12 @@ const JobList = () => {
 
   const deleteJob = (job) => {
     // console.log('Delete the Job');
-    dispatch(removeJobFromList(job))
+    dispatch(removeJobFromList(job));
   };
+
+  useEffect(() => {
+    dispatch(getJobs());
+  }, [dispatch]);
 
   return (
     <>
@@ -87,16 +95,17 @@ const JobList = () => {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {jobsList &&
-                jobsList.map((job, index) => {
-                  const isLast = index === jobsList.length - 1;
-                  const classes = isLast
-                    ? 'p-4'
-                    : 'p-4 border-b border-blue-gray-50';
 
-                  return (
-                    <tr key={index}>
+            {jobsList &&
+              jobsList.map((job, index) => {
+                const isLast = index === jobsList.length - 1;
+                const classes = isLast
+                  ? 'p-4'
+                  : 'p-4 border-b border-blue-gray-50';
+
+                return (
+                  <tbody key={index}>
+                    <tr>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
                           <Typography
@@ -159,15 +168,15 @@ const JobList = () => {
                         </Tooltip>
                       </td>
                     </tr>
-                  );
-                })}
+                  </tbody>
+                );
+              })}
 
-              {jobsList.length === 0 && (
-                <tr>
-                  <div>No Jobs Available</div>
-                </tr>
-              )}
-            </tbody>
+            {(jobsList.length === 0 || error !== '') && (
+              <div className="flex items-center justify-center text-red-700 font-semibold">
+                {error}
+              </div>
+            )}
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">

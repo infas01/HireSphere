@@ -1,10 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const initialState = {
   jobsList: [],
   selectedJob: {},
+  isLoading: false,
+  error: '',
 };
 
+//GET
+export const getJobs = createAsyncThunk(
+  'jobs/getJobs',
+  async (_, { rejectWithValue }) => {
+    const response = await fetch('http://localhost:8000/job');
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      return jsonResponse;
+    } else {
+      return rejectWithValue({ error: 'No Jobs Found' });
+    }
+  }
+);
 const jobsSlice = createSlice({
   name: 'jobsSlice',
   initialState,
@@ -27,6 +42,22 @@ const jobsSlice = createSlice({
     setSelectedJob: (state, action) => {
       state.selectedJob = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getJobs.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getJobs.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = '';
+        state.jobsList = action.payload;
+      })
+      .addCase(getJobs.rejected, (state, action) => {
+        state.error = action.payload.error;
+        state.isLoading = false;
+        state.jobsList = [];
+      });
   },
 });
 
