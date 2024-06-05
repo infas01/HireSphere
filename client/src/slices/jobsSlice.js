@@ -11,7 +11,7 @@ const initialState = {
 export const getJobs = createAsyncThunk(
   'jobs/getJobs',
   async (_, { rejectWithValue }) => {
-    const response = await fetch('http://localhost:8000/job');
+    const response = await fetch('http://localhost:8000/jobs');
     if (response.ok) {
       const jsonResponse = await response.json();
       return jsonResponse;
