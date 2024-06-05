@@ -28,8 +28,7 @@ const TABLE_ROWS = [
   {
     title: 'Frontend Developer',
     company: 'ABC company',
-    description:
-      'jdfsdfdfds dsfhidf hbfhjasfyia ahfbadhf jdfsdfdfds dsfhidf dhbfhjasfyia ahfbadhf jdfsdfdfds dsfhidf dhbfhjasfyia ahfbadhff',
+    description: 'jdfsdfdfds asfyia aahfbadhff',
   },
 ];
 
