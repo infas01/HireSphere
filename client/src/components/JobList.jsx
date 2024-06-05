@@ -16,33 +16,28 @@ import {
 } from '@material-tailwind/react';
 import { useState } from 'react';
 import UpdateJob from './UpdateJob';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeJobFromList, setSelectedJob } from '../slices/jobsSlice';
 
 const TABLE_HEAD = ['#', 'Job Title', 'Company', 'Description', 'Actions'];
 
-const TABLE_ROWS = [
-  {
-    title: 'Spotify',
-    company: 'ABC company',
-    description: 'jfnsdj dfjndasjf',
-  },
-  {
-    title: 'Frontend Developer',
-    company: 'ABC company',
-    description: 'jdfsdfdfds asfyia aahfbadhff',
-  },
-];
-
 const JobList = () => {
   const [open, setOpen] = useState(false);
+  const { jobsList } = useSelector((state) => state.jobs);
+  const dispatch = useDispatch();
   const closeUpdate = () => {
     setOpen(false);
   };
-  const updateJob = () => {
-    console.log('Update the Job');
+
+  const updateJob = (job) => {
+    //console.log('Update the Job');
     setOpen(true);
+    dispatch(setSelectedJob(job));
   };
-  const deleteJob = () => {
-    console.log('Delete the Job');
+
+  const deleteJob = (job) => {
+    // console.log('Delete the Job');
+    dispatch(removeJobFromList(job))
   };
 
   return (
@@ -55,7 +50,7 @@ const JobList = () => {
                 Jobs
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
-                Currently 1 job(s) available
+                {`Currently ${jobsList.length} job(s) available`}
               </Typography>
             </div>
             <div className="flex w-full shrink-0 gap-2 md:w-max">
@@ -93,72 +88,85 @@ const JobList = () => {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(({ title, company, description }, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? 'p-4'
-                  : 'p-4 border-b border-blue-gray-50';
+              {jobsList &&
+                jobsList.map((job, index) => {
+                  const isLast = index === jobsList.length - 1;
+                  const classes = isLast
+                    ? 'p-4'
+                    : 'p-4 border-b border-blue-gray-50';
 
-                return (
-                  <tr key={index}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
+                  return (
+                    <tr key={index}>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {index + 1}
+                          </Typography>
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-bold"
+                          >
+                            {job.title}
+                          </Typography>
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {job.company}
+                          </Typography>
+                        </div>
+                      </td>
+                      <td className={classes}>
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {index + 1}
+                          {job.description}
                         </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-bold"
-                        >
-                          {title}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {company}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {description}
-                      </Typography>
-                    </td>
+                      </td>
 
-                    <td className={classes}>
-                      <Tooltip content="Update Job">
-                        <IconButton variant="text" onClick={() => updateJob()}>
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip content="Delete Job">
-                        <IconButton variant="text" onClick={() => deleteJob()}>
-                          <TrashIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              })}
+                      <td className={classes}>
+                        <Tooltip content="Update Job">
+                          <IconButton
+                            variant="text"
+                            onClick={() => updateJob(job)}
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip content="Delete Job">
+                          <IconButton
+                            variant="text"
+                            onClick={() => deleteJob(job)}
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+              {jobsList.length === 0 && (
+                <tr>
+                  <div>No Jobs Available</div>
+                </tr>
+              )}
             </tbody>
           </table>
         </CardBody>

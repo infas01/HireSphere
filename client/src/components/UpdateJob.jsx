@@ -8,13 +8,29 @@ import {
   Textarea,
   Typography,
 } from '@material-tailwind/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateJobInList } from '../slices/jobsSlice';
 
 const UpdateJob = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [company, setCompany] = useState('');
+  const [id, setId] = useState(0);
+  const { selectedJob } = useSelector((state) => state.jobs);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (Object.keys(selectedJob).length !== 0) {
+      setTitle(selectedJob.title);
+      setCompany(selectedJob.company);
+      setDescription(selectedJob.description);
+      setId(selectedJob.id);
+    }
+  }, [selectedJob]);
 
   const handleUpdate = () => {
+    dispatch(updateJobInList({ id, title, company, description }));
     onClose();
   };
   return (
@@ -36,6 +52,19 @@ const UpdateJob = ({ onClose }) => {
             value={title}
             name="title"
             onChange={(e) => setTitle(e.target.value)}
+            className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+            labelProps={{
+              className: 'before:content-none after:content-none',
+            }}
+          />
+          <Typography variant="h6" color="blue-gray" className="-mb-3">
+            Company
+          </Typography>
+          <Input
+            size="lg"
+            value={company}
+            name="company"
+            onChange={(e) => setCompany(e.target.value)}
             className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
             labelProps={{
               className: 'before:content-none after:content-none',
